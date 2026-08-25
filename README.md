@@ -50,3 +50,53 @@ The strategy seeks high-probability pullback entries by identifying short-term p
 ├── app.py               # Streamlit application entry point & interactive Plotly visualization
 ├── requirements.txt     # Python dependencies
 └── README.md            # Project documentation
+```
+
+## Installation & Set up
+
+1. **Clone the repository**
+```bash
+git clone [https://github.com/YOUR_USERNAME/stock-backtester.git](https://github.com/YOUR_USERNAME/stock-backtester.git)
+cd stock-backtester
+```
+
+2. **Set Up Virtual Environment**
+```bash
+# macOS/Linux
+python3 -m venv venv
+source venv/bin/activate
+
+# Windows
+python -m venv venv
+venv\Scripts\activate
+```
+
+3. **Install Dependencies**
+```bash
+pip install -r requirements.txt
+```
+---
+
+# Usage
+**Run Engine Terminal Benchmark**
+- To verify performance logic directly via Python:
+```bash
+python backtest_engine.py
+```
+- Launch Interactive Streamlit Dashboard
+```bash
+streamlit run app.py
+```
+
+---
+
+# Sample Performance Output
+
+```bash
+{
+  "Annual Return": "1.36%",
+  "Annual Volatility": "3.59%",
+  "Sharpe Ratio": -0.73,
+  "Max Drawdown": "-3.08%"
+}
+```
