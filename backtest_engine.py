@@ -102,9 +102,55 @@ class BacktestEngine:
             "Max Drawdown": f"{max_drawdown:.2%}",
         }
 
+    def calculate_benchmark_comparison(
+        self, risk_free_rate: float = 0.04
+    ) -> dict:
+        df = self.generate_rsi_bb_signals().dropna()
+
+        # --- Strategy Metrics ---
+        strat_annual_return = df["Strategy_Return"].mean() * 252
+        strat_vol = df["Strategy_Return"].std() * np.sqrt(252)
+        strat_sharpe = (
+            (strat_annual_return - risk_free_rate) / strat_vol
+            if strat_vol != 0
+            else 0.0
+        )
+
+        df["Cum_Strategy"] = (1 + df["Strategy_Return"]).cumprod()
+        df["Strat_Peak"] = df["Cum_Strategy"].cummax()
+        strat_mdd = ((df["Cum_Strategy"] - df["Strat_Peak"]) / df["Strat_Peak"]).min()
+
+        # --- Benchmark (Market / Buy-and-Hold) Metrics ---
+        bench_annual_return = df["Market_Return"].mean() * 252
+        bench_vol = df["Market_Return"].std() * np.sqrt(252)
+        bench_sharpe = (
+            (bench_annual_return - risk_free_rate) / bench_vol
+            if bench_vol != 0
+            else 0.0
+        )
+
+        df["Cum_Bench"] = (1 + df["Market_Return"]).cumprod()
+        df["Bench_Peak"] = df["Cum_Bench"].cummax()
+        bench_mdd = ((df["Cum_Bench"] - df["Bench_Peak"]) / df["Bench_Peak"]).min()
+
+        # --- Reduction in Drawdown (Percentage Point Difference) ---
+        mdd_reduction = (abs(bench_mdd) - abs(strat_mdd)) * 100
+
+        return {
+            "Strategy Sharpe Ratio": round(strat_sharpe, 2),
+            "Benchmark Sharpe Ratio": round(bench_sharpe, 2),
+            "Strategy Max Drawdown": f"{strat_mdd:.2%}",
+            "Benchmark Max Drawdown": f"{bench_mdd:.2%}",
+            "Max Drawdown Reduction": f"{mdd_reduction:.1f}% lower than market",
+        }
+
 
 if __name__ == "__main__":
-    engine = BacktestEngine(ticker="AAPL", period="2y")
+    engine = BacktestEngine(ticker="AAPL", period="5y")
 
-    print("--- RSI + Bollinger Band Strategy Performance ---")
+    print("--- Strategy Performance ---")
     print(engine.calculate_performance())
+
+    print("\n--- Strategy vs Benchmark Comparison ---")
+    print(engine.calculate_benchmark_comparison())
+
