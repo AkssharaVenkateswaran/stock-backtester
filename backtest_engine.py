@@ -102,6 +102,21 @@ class BacktestEngine:
             "Max Drawdown": f"{max_drawdown:.2%}",
         }
 
+    def trade_diagnostics(self) -> dict:
+        df = self.generate_rsi_bb_signals().dropna()
+        days = len(df)
+        days_invested = int(df["Shifted_Signal"].sum())
+        entries = int(
+            ((df["Shifted_Signal"] == 1) & (df["Shifted_Signal"].shift(1) != 1)).sum()
+        )
+        return {
+            "Trading days": days,
+            "Days invested": days_invested,
+            "% of days invested": f"{days_invested / days:.1%}",
+            "Number of entries": entries,
+            }
+    
+
     def calculate_benchmark_comparison(
         self, risk_free_rate: float = 0.04
     ) -> dict:
@@ -138,12 +153,13 @@ class BacktestEngine:
 
         return {
             "Strategy Sharpe Ratio": round(strat_sharpe, 2),
+            "Benchmark Annual Return": f"{bench_annual_return:.2%}",
+            "Benchmark Annual Volatility": f"{bench_vol:.2%}",
             "Benchmark Sharpe Ratio": round(bench_sharpe, 2),
             "Strategy Max Drawdown": f"{strat_mdd:.2%}",
             "Benchmark Max Drawdown": f"{bench_mdd:.2%}",
             "Max Drawdown Reduction": f"{mdd_reduction:.1f}% lower than market",
         }
-
 
 if __name__ == "__main__":
     engine = BacktestEngine(ticker="AAPL", period="5y")
@@ -154,3 +170,5 @@ if __name__ == "__main__":
     print("\n--- Strategy vs Benchmark Comparison ---")
     print(engine.calculate_benchmark_comparison())
 
+    print("\n--- Trade Diagnostics ---")
+    print(engine.trade_diagnostics())
