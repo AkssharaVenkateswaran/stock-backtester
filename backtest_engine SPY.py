@@ -175,14 +175,16 @@ class BacktestEngine:
 
         return {
             "Strategy Sharpe Ratio": round(strat_sharpe, 2),
-            "SPY Benchmark Sharpe Ratio": round(bench_sharpe, 2),
+            "Benchmark Annual Return": f"{bench_annual_return:.2%}",
+            "Benchmark Annual Volatility": f"{bench_vol:.2%}",
+            "Benchmark Sharpe Ratio": round(bench_sharpe, 2),
             "Strategy Max Drawdown": f"{strat_mdd:.2%}",
-            "SPY Benchmark Max Drawdown": f"{bench_mdd:.2%}",
-            "Max Drawdown Reduction": f"{mdd_reduction:.1f} percentage points lower than buy-and-hold SPY",
+            "Benchmark Max Drawdown": f"{bench_mdd:.2%}",
+            "Max Drawdown Reduction": f"{mdd_reduction:.1f}% lower than market",
         }
     
 if __name__ == "__main__":
-    engine = BacktestEngine(ticker="AAPL", start="2019-01-01", end="2026-10-31")
+    engine = BacktestEngine(ticker="AAPL", period="5y")
 
     print("--- Strategy Performance ---")
     print(engine.calculate_performance())
