@@ -151,6 +151,8 @@ class BacktestEngine:
 
         return {
             "Strategy Sharpe Ratio": round(strat_sharpe, 2),
+            "Benchmark Annual Return": f"{bench_annual_return:.2%}",
+            "Benchmark Annual Volatility": f"{bench_vol:.2%}",
             "Benchmark Sharpe Ratio": round(bench_sharpe, 2),
             "Strategy Max Drawdown": f"{strat_mdd:.2%}",
             "Benchmark Max Drawdown": f"{bench_mdd:.2%}",
